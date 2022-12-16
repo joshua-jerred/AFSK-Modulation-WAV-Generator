@@ -17,9 +17,14 @@
 #include <fstream>
 #include <iostream>
 #include <bitset>
+#include <queue>
 
 class AFSK {
  public:
+    enum class MODE {
+         AX25 = 0,
+         MINIMODEM = 1
+    };
     AFSK(std::string file_path);
     //AFSK(std::string file_path, int baud_rate); // Sticking with 1200 for now
     ~AFSK();
@@ -27,6 +32,7 @@ class AFSK {
     void dumpBitStream(); // For debugging
 
  private:
+    MODE mode_ = MODE::MINIMODEM; // Change this
     // ------------------------------
     // AFSK Modulation Stuff
     // ------------------------------
@@ -34,16 +40,12 @@ class AFSK {
     void addSymbol(bool change);
     void NRZI();
     // Constants
-    int mark_freq_ = 2200;
-    int space_freq_ = 1200;
+    const int baud_rate_ = 1200; // 1200 Baud rate of the AFSK signal
+    const int freq_center_ = 1700; // 1700 Center frequency of the AFSK signal
+    const int freq_dev_ = 500; // 500 Frequency deviation for mark/space
+
     // Variables
-    int baud_rate_;
     bool last_bit_ = false; // Used for modulation (NRZI)
-    double wave_angle_ = 0.0f;
-    double mark_delta_ = 0.0f;
-    double space_delta_ = 0.0f;
-    bool last_symbol_ = false; // false = space, true = mark
-    int samples_per_symbol_ = 0;
 
     // ------------------------------
     // bit stream stuff (see my PSK modulator). 
@@ -58,6 +60,7 @@ class AFSK {
     unsigned int bit_stream_index_ = 0;
     uint32_t bit_stream_buffer_ = 0;
     int bit_stream_offset_ = 0;
+    int bit_stream_length_ = 0; // number of bits in the bit stream
 
     // ------------------------------
     // WAV File Stuff
