@@ -32,7 +32,7 @@ class AFSK {
     void dumpBitStream(); // For debugging
 
  private:
-    MODE mode_ = MODE::MINIMODEM; // Change this
+    MODE mode_ = MODE::AX25; // Change this
     // ------------------------------
     // AFSK Modulation Stuff
     // ------------------------------
