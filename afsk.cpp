@@ -196,16 +196,32 @@ void AFSK::encodeBitStream() {
      * It's not encoded into 0 and 1, it's bipolar, so -1 and 1.
      */
     std::queue<int8_t> nrzi_bipolar_bits_;
+    
     int current_bit = popNextBit();
-    int current = 1; // 1 = mark, -1 = space
-    while (bit_stream_length_ >= 0) {
-        if (!current_bit) { // 0
-            current = -current;
+    if (mode_ == MODE::AX25) {
+        int current = 1; // 1 = mark, -1 = space
+        while (bit_stream_length_ >= 0) {
+            if (!current_bit) { // 0
+                current = -current;
+            }
+            nrzi_bipolar_bits_.push(current);
+            current_bit = popNextBit();
+            if (current_bit == -1) {
+                break;
+            }
         }
-        nrzi_bipolar_bits_.push(current);
-        current_bit = popNextBit();
-        if (current_bit == -1) {
-            break;
+    } else if (mode_ == MODE::MINIMODEM) {
+        while (bit_stream_length_ >= 0) {
+            if (!current_bit) { // 0
+                nrzi_bipolar_bits_.push(1);
+            } else { // 1
+                nrzi_bipolar_bits_.push(-1);
+            }
+            
+            current_bit = popNextBit();
+            if (current_bit == -1) {
+                break;
+            }
         }
     }
 
@@ -249,10 +265,13 @@ int main() {
     AFSK afsk("test.wav");
     //unsigned char data[1] = {0b01001011};
     //afsk.encodeRawData(data, 1);
-    unsigned char data[151] = 
-    "Hello World, this is a very long test message, I hope it works, we're"
-    " about to find out! 123456789 abcdefghijklmnopqrstuvwxyz"
-    "ABCDEFGHIJKLMNOPQRSTUVWXY";
-    afsk.encodeRawData(data, 150);
+    //unsigned char data[151] = 
+    //"Hello World, this is a very long test message, I hope it works, we're"
+    //" about to find out! 123456789 abcdefghijklmnopqrstuvwxyz"
+    //"ABCDEFGHIJKLMNOPQRSTUVWXY";
+    unsigned char data[180] = {
+        0xC5, 0xD5, 0x35, 0x9D, 0x17, 0x52, 0xD3, 0xB5, 0xCD, 0x28
+    };
+    afsk.encodeRawData(data, 11);
     return 0;
 }

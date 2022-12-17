@@ -74,7 +74,7 @@ class AFSK {
     const int sample_rate_ = 44100; // Sample rate of the WAV file in Hz (44100)
     const int bits_per_sample_ = 16; // Bits per sample (16-bit WAV)
     const int max_amplitude_ = pow(2, bits_per_sample_ - 1) - 1;
-    double amplitude_ = 0.5;
+    double amplitude_ = 1;
     
     // file things
     std::string file_path_; 
